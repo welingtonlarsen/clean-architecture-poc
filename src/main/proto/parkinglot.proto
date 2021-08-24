@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.parkinglot";
+option java_outer_classname = "Parkinglot";
+option objc_class_prefix = "HLW";
+
+package com.parkinglot;
+
+service ParkinglotService {
+  rpc send (ParkinglotRequest) returns (ParkinglotReply) {}
+}
+
+message ParkinglotRequest {
+  string name = 1;
+}
+
+message ParkinglotReply {
+  string message = 1;
+}
