@@ -8,6 +8,5 @@ import com.parkinglot.core.entity.ParkingLot
 interface ParkingLotRepository {
     fun createParkingLot(parkingLotDto: ParkingLotDto): ParkingLot?
     fun getParkingLotById(id: Long): ParkingLot?
-    fun saveParkedCar(parkedCarDto: ParkedCarDto): ParkedCar?
-    fun increaseParkingLotOccupiedSpace(parkingLotId: Long)
+    fun saveParkedCar(parkedCarDto: ParkedCarDto, parkingLotId: Long): ParkedCar?
 }

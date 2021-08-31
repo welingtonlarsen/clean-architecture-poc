@@ -1,3 +1,23 @@
 micronaut:
   application:
     name: parkinglot
+
+datasources:
+  default:
+    dialect: POSTGRES
+    driverClassName: org.postgresql.Driver
+    password: secret
+    schema-generate: CREATE_DROP
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+
+jpa:
+  default:
+    compile-time-hibernate-proxies: true
+    entity-scan:
+      packages: 'com.parkinglot.infra.database.postgresql.model'
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        show_sql: true

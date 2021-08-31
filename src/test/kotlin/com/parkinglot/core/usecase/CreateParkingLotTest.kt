@@ -34,9 +34,9 @@ class CreateParkingLotTest : BehaviorSpec() {
                 every { parkingLotRepository.createParkingLot(any()) } returns ParkingLot(
                     ID,
                     parkingLotDto.capacity,
-                    OCCUPIED_SPACES,
                     parkingLotDto.openHour,
-                    parkingLotDto.closeHour
+                    parkingLotDto.closeHour,
+                    listOf()
                 )
 
                 val parkingLot = createParkingLot.execute(parkingLotDto)
@@ -46,7 +46,6 @@ class CreateParkingLotTest : BehaviorSpec() {
                     parkingLot.capacity shouldBe 10
                     parkingLot.openHour shouldBe LocalTime.of(9, 0)
                     parkingLot.closeHour shouldBe LocalTime.of(18, 0)
-                    parkingLot.occupiedSpaces shouldBe 0
                 }
             }
         }
@@ -55,7 +54,6 @@ class CreateParkingLotTest : BehaviorSpec() {
     companion object {
         private const val ID = 1L
         private const val CAPACITY = 10
-        private const val OCCUPIED_SPACES = 0
         private const val OPEN_HOUR = 9
         private const val CLOSE_HOUR = 18
         private const val OPEN_CLOSE_MINUTE = 0

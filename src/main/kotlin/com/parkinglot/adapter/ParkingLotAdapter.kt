@@ -1,17 +1,17 @@
 package com.parkinglot.adapter
 
+import com.parkinglot.core.entity.ParkedCar
 import com.parkinglot.core.entity.ParkingLot
 import java.time.LocalTime
 
 class ParkingLotAdapter {
     companion object {
-        fun create(
-            parkingLotId: Long,
+        fun createFromAllParameters(
+            id: Long,
             capacity: Int,
-            occupiedSpaces: Int,
             openHour: LocalTime,
-            closeHour: LocalTime
-        ): ParkingLot =
-            ParkingLot(parkingLotId, capacity, occupiedSpaces, openHour, closeHour)
+            closeHour: LocalTime,
+            parkedCars: List<ParkedCar>
+        ) = ParkingLot(id, capacity, openHour, closeHour, parkedCars)
     }
 }

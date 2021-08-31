@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 
 class ParkedCarAdapter {
     companion object {
-        fun create(id: Long, plate: String, date: LocalDateTime): ParkedCar = ParkedCar(id, plate, date)
+        fun createFromAllParameters(id: Long, plate: String, date: LocalDateTime, parkingLotId: Long) =
+            ParkedCar(id, plate, date, parkingLotId)
     }
 }

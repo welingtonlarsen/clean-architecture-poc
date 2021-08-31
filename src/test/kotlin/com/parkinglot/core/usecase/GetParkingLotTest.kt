@@ -30,15 +30,14 @@ class GetParkingLotTest : BehaviorSpec() {
                 every { parkingLotRepository.getParkingLotById(any()) } returns ParkingLot(
                     ID,
                     CAPACITY,
-                    OCCUPIED_SPACES,
                     LocalTime.of(OPEN_HOUR, OPEN_CLOSE_MINUTE),
-                    LocalTime.of(CLOSE_HOUR, OPEN_CLOSE_MINUTE)
+                    LocalTime.of(CLOSE_HOUR, OPEN_CLOSE_MINUTE),
+                    listOf()
                 )
                 val parkingLot = getParkingLot.execute(parkingLotId)
 
                 Then("the parking lot should have been returned") {
                     parkingLot.id shouldBe ID
-                    parkingLot.occupiedSpaces shouldBe OCCUPIED_SPACES
                     parkingLot.capacity shouldBe CAPACITY
                     parkingLot.openHour shouldBe LocalTime.of(OPEN_HOUR, OPEN_CLOSE_MINUTE)
                     parkingLot.closeHour shouldBe LocalTime.of(CLOSE_HOUR, OPEN_CLOSE_MINUTE)
@@ -50,7 +49,6 @@ class GetParkingLotTest : BehaviorSpec() {
     companion object {
         private const val ID = 1L
         private const val CAPACITY = 10
-        private const val OCCUPIED_SPACES = 5
         private const val OPEN_HOUR = 10
         private const val CLOSE_HOUR = 18
         private const val OPEN_CLOSE_MINUTE = 0

@@ -12,7 +12,6 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.justRun
 import java.time.LocalDateTime
 import java.time.LocalTime
 
@@ -44,8 +43,16 @@ class EnterCarInParkingLotTest : BehaviorSpec() {
             }
             When("parking the car in a closed parking lot") {
                 every { parkingLotRepository.getParkingLotById(any()) } returns ParkingLot(
-                    PARKING_LOT_ID, CAPACITY, OCCUPIED_SPACES, LocalTime.of(PARKED_HOUR, OPEN_MINUTE),
-                    LocalTime.of(CLOSE_HOUR, CLOSE_MINUTE)
+                    PARKING_LOT_ID, CAPACITY, LocalTime.of(PARKED_HOUR, OPEN_MINUTE),
+                    LocalTime.of(CLOSE_HOUR, CLOSE_MINUTE),
+                    listOf(
+                        ParkedCar(
+                            PARKED_CAR_ID,
+                            PLATE,
+                            LocalDateTime.of(YEAR, MONTH, DAY, PARKED_HOUR, PARKED_MINUTE),
+                            PARKING_LOT_ID
+                        )
+                    )
                 )
 
                 val exception = shouldThrow<Exception> { enterCarInParkingLot.execute(parkingLotId, parkedCarDto) }
@@ -56,8 +63,16 @@ class EnterCarInParkingLotTest : BehaviorSpec() {
             }
             When("parking the car in a full parking lot") {
                 every { parkingLotRepository.getParkingLotById(any()) } returns ParkingLot(
-                    PARKING_LOT_ID, CAPACITY, CAPACITY, LocalTime.of(OPEN_HOUR, OPEN_MINUTE),
-                    LocalTime.of(CLOSE_HOUR, CLOSE_MINUTE)
+                    PARKING_LOT_ID, ZERO_CAPACITY, LocalTime.of(OPEN_HOUR, OPEN_MINUTE),
+                    LocalTime.of(CLOSE_HOUR, CLOSE_MINUTE),
+                    listOf(
+                        ParkedCar(
+                            PARKED_CAR_ID,
+                            PLATE,
+                            LocalDateTime.of(YEAR, MONTH, DAY, PARKED_HOUR, PARKED_MINUTE),
+                            PARKING_LOT_ID
+                        )
+                    )
                 )
 
                 val exception = shouldThrow<Exception> { enterCarInParkingLot.execute(parkingLotId, parkedCarDto) }
@@ -72,15 +87,25 @@ class EnterCarInParkingLotTest : BehaviorSpec() {
     private fun mockToParkingTheCar() {
         every { parkingLotRepository.getParkingLotById(any()) } returns
             ParkingLot(
-                PARKING_LOT_ID, CAPACITY, OCCUPIED_SPACES, LocalTime.of(OPEN_HOUR, OPEN_MINUTE),
-                LocalTime.of(CLOSE_HOUR, CLOSE_MINUTE)
+                PARKING_LOT_ID,
+                CAPACITY,
+                LocalTime.of(OPEN_HOUR, OPEN_MINUTE),
+                LocalTime.of(CLOSE_HOUR, CLOSE_MINUTE),
+                listOf(
+                    ParkedCar(
+                        PARKED_CAR_ID,
+                        PLATE,
+                        LocalDateTime.of(YEAR, MONTH, DAY, PARKED_HOUR, PARKED_MINUTE),
+                        PARKING_LOT_ID
+                    )
+                )
             )
-        every { parkingLotRepository.saveParkedCar(any()) } returns ParkedCar(
+        every { parkingLotRepository.saveParkedCar(any(), any()) } returns ParkedCar(
             PARKED_CAR_ID,
             PLATE,
-            LocalDateTime.of(YEAR, MONTH, DAY, PARKED_HOUR, PARKED_MINUTE)
+            LocalDateTime.of(YEAR, MONTH, DAY, PARKED_HOUR, PARKED_MINUTE),
+            PARKING_LOT_ID
         )
-        justRun { parkingLotRepository.increaseParkingLotOccupiedSpace(any()) }
     }
 
     companion object {
@@ -93,6 +118,7 @@ class EnterCarInParkingLotTest : BehaviorSpec() {
         private const val PARKED_HOUR = 11
         private const val PARKED_MINUTE = 0
         private const val CAPACITY = 10
+        private const val ZERO_CAPACITY = 0
         private const val OCCUPIED_SPACES = 0
         private const val OPEN_HOUR = 9
         private const val OPEN_MINUTE = 0
