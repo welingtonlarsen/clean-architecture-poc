@@ -1,5 +1,9 @@
 package com.parkinglot.infra.http
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import com.parkinglot.controller.ParkingLotController
 import com.parkinglot.core.dto.ParkedCarDto
 import com.parkinglot.core.dto.ParkingLotDto
@@ -32,9 +36,13 @@ class ParkingLotEndpoint(private val parkingLotController: ParkingLotController)
 
     @Get("/{parkingLotId}")
     fun getParkingLotById(@PathVariable parkingLotId: Long): HttpResponse<ParkingLot> {
-        parkingLotController.getParkingLotById(parkingLotId)?.let {
-            return HttpResponse.ok(it)
+        return when (val parkingLot = parkingLotController.getParkingLotById(parkingLotId)) {
+            is Either.Left -> {
+                HttpResponse.serverError()
+            }
+            is Either.Right -> {
+                HttpResponse.ok(parkingLot.value)
+            }
         }
-        return HttpResponse.serverError()
     }
 }

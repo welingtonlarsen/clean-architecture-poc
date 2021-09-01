@@ -1,5 +1,6 @@
 package com.parkinglot.controller
 
+import arrow.core.Either
 import com.parkinglot.core.dto.ParkedCarDto
 import com.parkinglot.core.dto.ParkingLotDto
 import com.parkinglot.core.entity.ParkedCar
@@ -31,11 +32,7 @@ class ParkingLotController(
         }
     }
 
-    fun getParkingLotById(parkingLotId: Long): ParkingLot? {
-        return try {
-            getParkingLot.execute(parkingLotId)
-        } catch (e: Exception) {
-            null
-        }
+    fun getParkingLotById(parkingLotId: Long): Either<String, ParkingLot> {
+        return getParkingLot.execute(parkingLotId)
     }
 }

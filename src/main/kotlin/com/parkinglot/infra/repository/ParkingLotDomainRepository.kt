@@ -1,5 +1,8 @@
 package com.parkinglot.infra.repository
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.parkinglot.adapter.ParkedCarAdapter
 import com.parkinglot.adapter.ParkingLotAdapter
 import com.parkinglot.adapter.ParkingLotModelAdapter
@@ -46,12 +49,14 @@ open class ParkingLotDomainRepository(
 
     // TODO: Implement cache
     @Transactional
-    override fun getParkingLotById(id: Long): ParkingLot? {
-        val parkingLotModel = parkingLotJpaRepository.findById(id).get()
+    override fun getParkingLotById(id: Long): Either<String, ParkingLot> {
+        val parkingLotModel = parkingLotJpaRepository.findById(id)
 
-        return if (parkingLotModel.id != null) {
+        return if (parkingLotModel.isPresent) {
+            val parkingLotModelFinded = parkingLotModel.get()
+
             val parkedCars =
-                parkingLotModel.parkedCars.map {
+                parkingLotModelFinded.parkedCars.map {
                     ParkedCarAdapter.createFromAllParameters(
                         it.id!!,
                         it.plate!!,
@@ -60,15 +65,17 @@ open class ParkingLotDomainRepository(
                     )
                 }
 
-            ParkingLotAdapter.createFromAllParameters(
-                parkingLotModel.id,
-                parkingLotModel.capacity!!,
-                parkingLotModel.openHour!!,
-                parkingLotModel.closeHour!!,
+            val parkingLot = ParkingLotAdapter.createFromAllParameters(
+                parkingLotModelFinded.id!!,
+                parkingLotModelFinded.capacity!!,
+                parkingLotModelFinded.openHour!!,
+                parkingLotModelFinded.closeHour!!,
                 parkedCars
             )
+
+            Either.Right(parkingLot)
         } else {
-            null
+            Either.Left("Parking lot with id $id doesn't exist")
         }
     }
 
