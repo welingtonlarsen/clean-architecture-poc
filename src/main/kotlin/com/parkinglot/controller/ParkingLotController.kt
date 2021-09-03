@@ -24,12 +24,8 @@ class ParkingLotController(
         }
     }
 
-    fun enterCarInParkingLot(parkingLotId: Long, parkedCarDto: ParkedCarDto): ParkedCar? {
-        return try {
-            enterCarInParkingLot.execute(parkingLotId, parkedCarDto)
-        } catch (e: Exception) {
-            null
-        }
+    fun enterCarInParkingLot(parkingLotId: Long, parkedCarDto: ParkedCarDto): Either<String, ParkedCar> {
+        return enterCarInParkingLot.execute(parkingLotId, parkedCarDto)
     }
 
     fun getParkingLotById(parkingLotId: Long): Either<String, ParkingLot> {
