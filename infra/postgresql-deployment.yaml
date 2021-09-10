@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  labels:
+    app: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:10.4
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgresql-volume
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-configmap
+              key: DB_NAME
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-configmap
+              key: DB_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom: 
+            configMapKeyRef:
+              name: postgres-configmap
+              key: DB_PASSWORD
+      volumes:
+      - name: postgresql-volume
+        persistentVolumeClaim:
+          claimName: postgresql-pvc
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres-deployment
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

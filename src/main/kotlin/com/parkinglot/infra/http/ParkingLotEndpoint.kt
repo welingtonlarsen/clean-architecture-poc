@@ -17,11 +17,9 @@ import io.micronaut.http.annotation.Post
 class ParkingLotEndpoint(private val parkingLotController: ParkingLotController) {
     @Post("/create")
     fun createParkingLot(@Body dto: ParkingLotDto): HttpResponse<ParkingLot> {
-        val parkingLot = parkingLotController.createParkingLot(dto)
-        parkingLot?.let {
-            return HttpResponse.created(it)
-        }
-        return HttpResponse.serverError()
+        return parkingLotController.createParkingLot(dto).fold(
+            { HttpResponse.serverError() }, { HttpResponse.created(it) }
+        )
     }
 
     @Post("/enter-car/{parkingLotId}")

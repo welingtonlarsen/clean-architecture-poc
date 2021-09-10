@@ -13,7 +13,7 @@ fun EitherExamples() {
     } // 1
 
     // Either :: fold
-    result.fold(
+    val result2 = result.fold(
         { 399 },
         { it }
     ) // 1

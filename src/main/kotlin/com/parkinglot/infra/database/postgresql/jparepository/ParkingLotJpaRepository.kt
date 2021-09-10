@@ -1,4 +1,4 @@
-package com.parkinglot.infra.database.postgresql
+package com.parkinglot.infra.database.postgresql.jparepository
 
 import com.parkinglot.infra.database.postgresql.model.ParkingLotModel
 import io.micronaut.data.annotation.Repository

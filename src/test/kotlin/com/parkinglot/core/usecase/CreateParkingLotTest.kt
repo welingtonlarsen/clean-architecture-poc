@@ -1,11 +1,13 @@
 package com.parkinglot.core.usecase
 
+import arrow.core.Either
 import com.parkinglot.core.dto.ParkingLotDto
 import com.parkinglot.core.entity.ParkingLot
 import com.parkinglot.core.repository.ParkingLotRepository
 import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -31,21 +33,29 @@ class CreateParkingLotTest : BehaviorSpec() {
             )
 
             When("creating a parking lot") {
-                every { parkingLotRepository.createParkingLot(any()) } returns ParkingLot(
-                    ID,
-                    parkingLotDto.capacity,
-                    parkingLotDto.openHour,
-                    parkingLotDto.closeHour,
-                    listOf()
+                every { parkingLotRepository.createParkingLot(any()) } returns Either.Right(
+                    ParkingLot(
+                        ID,
+                        parkingLotDto.capacity,
+                        parkingLotDto.openHour,
+                        parkingLotDto.closeHour,
+                        listOf()
+                    )
                 )
 
                 val parkingLot = createParkingLot.execute(parkingLotDto)
 
                 Then("the parking lot should have been created") {
-                    parkingLot.id shouldBe 1L
-                    parkingLot.capacity shouldBe 10
-                    parkingLot.openHour shouldBe LocalTime.of(9, 0)
-                    parkingLot.closeHour shouldBe LocalTime.of(18, 0)
+                    parkingLot shouldBe Either.Right(
+                        ParkingLot(
+                            ID,
+                            parkingLotDto.capacity,
+                            parkingLotDto.openHour,
+                            parkingLotDto.closeHour,
+                            listOf()
+                        )
+                    )
+                    parkingLot shouldNotBe Either.Left
                 }
             }
         }

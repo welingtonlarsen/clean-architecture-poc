@@ -1,5 +1,6 @@
 package com.parkinglot.core.usecase
 
+import arrow.core.Either
 import com.parkinglot.core.entity.ParkingLot
 import com.parkinglot.core.repository.ParkingLotRepository
 import io.kotest.core.spec.Spec
@@ -27,20 +28,28 @@ class GetParkingLotTest : BehaviorSpec() {
             val parkingLotId = ID
 
             When("requesting for a parking lot") {
-                every { parkingLotRepository.getParkingLotById(any()) } returns ParkingLot(
-                    ID,
-                    CAPACITY,
-                    LocalTime.of(OPEN_HOUR, OPEN_CLOSE_MINUTE),
-                    LocalTime.of(CLOSE_HOUR, OPEN_CLOSE_MINUTE),
-                    listOf()
+                every { parkingLotRepository.getParkingLotById(any()) } returns Either.Right(
+                    ParkingLot(
+                        ID,
+                        CAPACITY,
+                        LocalTime.of(OPEN_HOUR, OPEN_CLOSE_MINUTE),
+                        LocalTime.of(CLOSE_HOUR, OPEN_CLOSE_MINUTE),
+                        listOf()
+                    )
                 )
+
                 val parkingLot = getParkingLot.execute(parkingLotId)
 
                 Then("the parking lot should have been returned") {
-                    parkingLot.id shouldBe ID
-                    parkingLot.capacity shouldBe CAPACITY
-                    parkingLot.openHour shouldBe LocalTime.of(OPEN_HOUR, OPEN_CLOSE_MINUTE)
-                    parkingLot.closeHour shouldBe LocalTime.of(CLOSE_HOUR, OPEN_CLOSE_MINUTE)
+                    parkingLot shouldBe Either.Right(
+                        ParkingLot(
+                            ID,
+                            CAPACITY,
+                            LocalTime.of(OPEN_HOUR, OPEN_CLOSE_MINUTE),
+                            LocalTime.of(CLOSE_HOUR, OPEN_CLOSE_MINUTE),
+                            listOf()
+                        )
+                    )
                 }
             }
         }

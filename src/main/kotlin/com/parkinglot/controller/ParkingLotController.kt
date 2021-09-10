@@ -16,19 +16,10 @@ class ParkingLotController(
     private val enterCarInParkingLot: EnterCarInParkingLot,
     private val getParkingLot: GetParkingLot
 ) {
-    fun createParkingLot(dto: ParkingLotDto): ParkingLot? {
-        return try {
-            createParkingLot.execute(dto)
-        } catch (e: Exception) {
-            null
-        }
-    }
+    fun createParkingLot(dto: ParkingLotDto): Either<String, ParkingLot> = createParkingLot.execute(dto)
 
-    fun enterCarInParkingLot(parkingLotId: Long, parkedCarDto: ParkedCarDto): Either<String, ParkedCar> {
-        return enterCarInParkingLot.execute(parkingLotId, parkedCarDto)
-    }
+    fun enterCarInParkingLot(parkingLotId: Long, parkedCarDto: ParkedCarDto): Either<String, ParkedCar> =
+        enterCarInParkingLot.execute(parkingLotId, parkedCarDto)
 
-    fun getParkingLotById(parkingLotId: Long): Either<String, ParkingLot> {
-        return getParkingLot.execute(parkingLotId)
-    }
+    fun getParkingLotById(parkingLotId: Long): Either<String, ParkingLot> = getParkingLot.execute(parkingLotId)
 }

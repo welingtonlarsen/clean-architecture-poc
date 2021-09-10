@@ -1,31 +1,23 @@
 package com.parkinglot.infra.repository
 
 import arrow.core.Either
-import arrow.core.left
-import arrow.core.right
 import com.parkinglot.adapter.ParkedCarAdapter
 import com.parkinglot.adapter.ParkingLotAdapter
 import com.parkinglot.adapter.ParkingLotModelAdapter
-import com.parkinglot.core.dto.ParkedCarDto
 import com.parkinglot.core.dto.ParkingLotDto
-import com.parkinglot.core.entity.ParkedCar
 import com.parkinglot.core.entity.ParkingLot
 import com.parkinglot.core.repository.ParkingLotRepository
-import com.parkinglot.infra.database.postgresql.ParkedCarJpaRepository
-import com.parkinglot.infra.database.postgresql.ParkingLotJpaRepository
-import com.parkinglot.infra.database.postgresql.model.ParkedCarModel
+import com.parkinglot.infra.database.postgresql.jparepository.ParkingLotJpaRepository
 import jakarta.inject.Singleton
 import javax.transaction.Transactional
 
 @Singleton
-open class ParkingLotDomainRepository(
+open class ParkingLotDomainPostgresRepository(
     private val parkingLotJpaRepository: ParkingLotJpaRepository,
-    private val parkedCarJpaRepository: ParkedCarJpaRepository
-) :
-    ParkingLotRepository {
+) : ParkingLotRepository {
 
-    // TODO: Implement undo persistence actions when have exception
-    override fun createParkingLot(parkingLotDto: ParkingLotDto): ParkingLot? {
+    // TODO: Implement undo persistence actions when have exception (rollback)
+    override fun createParkingLot(parkingLotDto: ParkingLotDto): Either<String, ParkingLot> {
         return try {
             val model = parkingLotJpaRepository.save(
                 ParkingLotModelAdapter.createNew(
@@ -36,14 +28,16 @@ open class ParkingLotDomainRepository(
             )
 
             if (model.id == null || model.capacity == null || model.openHour == null || model.closeHour == null) {
-                throw Exception("It was not possible to persist the parking lot")
+                return Either.Left("It was not possible to persist the parking lot")
             }
 
-            ParkingLotAdapter.createFromAllParameters(
-                model.id, model.capacity, model.openHour, model.closeHour, emptyList()
+            Either.Right(
+                ParkingLotAdapter.createFromAllParameters(
+                    model.id, model.capacity, model.openHour, model.closeHour, emptyList()
+                )
             )
         } catch (e: Exception) {
-            null
+            Either.Left("It was not possible to persist the parking lot")
         }
     }
 
@@ -77,17 +71,5 @@ open class ParkingLotDomainRepository(
         } else {
             Either.Left("Parking lot with id $id doesn't exist")
         }
-    }
-
-    override fun saveParkedCar(parkedCarDto: ParkedCarDto, parkingLotId: Long): ParkedCar? {
-        val parkingLotModel = parkingLotJpaRepository.findById(parkingLotId).get()
-        val parkedCarModel =
-            parkedCarJpaRepository.save(ParkedCarModel(null, parkedCarDto.plate, parkedCarDto.date, parkingLotModel))
-        return ParkedCarAdapter.createFromAllParameters(
-            parkedCarModel.id!!,
-            parkedCarModel.plate!!,
-            parkedCarModel.date!!,
-            parkedCarModel.parkingLotModel!!.id!!
-        )
     }
 }

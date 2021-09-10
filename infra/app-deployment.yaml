@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  labels:
+    app: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: app
+        image: welington/parkinglot-app:4.0
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-configmap
+              key: DB_HOST
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-configmap
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-configmap
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom: 
+            configMapKeyRef:
+              name: postgres-configmap
+              key: DB_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+spec:
+  selector:
+    app: app
+  type: LoadBalancer  
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30000

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-configmap
+data:
+  DB_PASSWORD: secret
+  DB_HOST: postgres
+  DB_NAME: parkinglot
+  DB_USER: postgres
+  
